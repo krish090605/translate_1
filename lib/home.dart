@@ -11,9 +11,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<dynamic> lang = ['none'];
-  String selectedItem = '';
+  List<String> lang = ['none'];
+  String? selectedLang = '';
   String y = '';
+  String getDropdownItems = '';
 
 
   Future<int> fetchLanguage() async {
@@ -33,13 +34,20 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     print(lang);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DropdownButtonExample(lang:lang), // Pass lang list here
+      ),
+    );
     return 1;
   }
+
 
   @override
   Widget build(BuildContext context) {
     String inival = lang[0];
-    return Scaffold (
+    return Scaffold(
         backgroundColor: Colors.black,
         body: FutureBuilder<void>(
             future: fetchLanguage(),
@@ -49,143 +57,131 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: CircularProgressIndicator(),
                 );
               }
-              else
-                return Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          Container(
-                            width: 500.0,
-                            height: 70.0,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.rectangle,
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(10.0),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: Center(
-                                child: Text('TRANSLATE',
-                                  textAlign: TextAlign.center,
-
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                    fontFamily: 'Ubuntubold',
-                                    fontWeight: FontWeight.w800,
-                                    fontSize: 30.0,
-                                    letterSpacing: 2.0,
 
 
-                                  ),
-
-
-                                ),
-                              ),
-                            ),
-
+              return Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        Container(
+                          width: 500.0,
+                          height: 70.0,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.rectangle,
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
-                          SizedBox(height: 40.0,),
-                          SizedBox(
-                            height: 200.0,
-                            width: 200.0,
-                            child: TextField(
-                              maxLines: null,
-                              expands: true,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: BorderSide(
-                                      color: Colors.cyanAccent,
-                                      width: 10),
-                                ),
-                                filled: true,
-                                fillColor: Colors.grey[300],
-                                hintText: 'ENTER TEXT',
-                                suffixStyle: TextStyle(
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 40.0),
-                          SizedBox(
-                            height: 200.0,
-                            width: 200.0,
-                            child: Container(
-                              child: Text('$y',
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Center(
+                              child: Text('TRANSLATE',
+                                textAlign: TextAlign.center,
+
                                 style: TextStyle(
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontFamily: 'Ubuntubold',
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 30.0,
+                                  letterSpacing: 2.0,
+
 
                                 ),
 
-                              )
-                              ,
 
+                              ),
                             ),
                           ),
-                        ])
-                );
-               }),
-        SizedBox(height: 40.0),
-        Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Expanded(child: Container(
-                alignment: Alignment.centerLeft,
-                height: 70.0,
 
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(10.0),
-                ),),),
+                        ),
+                        SizedBox(height: 40.0,),
+                        SizedBox(
+                          height: 200.0,
+                          width: 200.0,
+                          child: TextField(
+                            maxLines: null,
+                            expands: true,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: BorderSide(
+                                    color: Colors.cyanAccent,
+                                    width: 10),
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey[300],
+                              hintText: 'ENTER TEXT',
+                              suffixStyle: TextStyle(
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 40.0),
+                        SizedBox(
+                          height: 200.0,
+                          width: 200.0,
+                          child: Container(
+                            color: Colors.grey[300],
+                            child: Text('$y',
+                              style: TextStyle(
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.bold,
 
+                              ),
 
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                    40.0, 0.0, 40.0, 0.0),
-                child: SizedBox(
-                  height: 70.0,
-                  width: 100.0,
-                  child: FloatingActionButton(onPressed: () {
-                    translate();
-                  },
-                    backgroundColor: Colors.grey[300],
-                    elevation: 5.0,
-                    shape: BeveledRectangleBorder(
-                      borderRadius: BorderRadius.circular(5.0),
-                    ),
+                            )
+                            ,
 
-
-                    child: Icon(
-                        Icons.translate_outlined,
-                        color: Colors.black),
-                  ),
-                ),
-              ),
-              Expanded(child: Container(
-                child: DropdownButton<String>(
-                  value: selectedItem,
-                  items: lang.map((item) =>
-                      DropdownMenuItem<String>(
-                        value: item,
+                          ),
+                        ),
 
 
-                        child: Text(item,
-                            style: TextStyle(fontSize: 24)),))
-                      .toList(),
-                  onChanged: (i) =>
-                      setState(() => selectedItem = i!),)
-                , decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(10.0),),),)
+                        SizedBox(height: 40.0),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Expanded(child: Container(
+                                alignment: Alignment.centerLeft,
+                                height: 70.0,
+
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.rectangle,
+                                  color: Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),),),
 
 
-            ])
-    );
+                              Padding(
+                                padding: const EdgeInsets.fromLTRB(
+                                    40.0, 0.0, 40.0, 0.0),
+                                child: SizedBox(
+                                  height: 70.0,
+                                  width: 100.0,
+                                  child: FloatingActionButton(onPressed: () {
+                                    translate();
+                                  },
+                                    backgroundColor: Colors.grey[300],
+                                    elevation: 5.0,
+                                    shape: BeveledRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                    ),
+
+
+                                    child: Icon(
+                                        Icons.translate_outlined,
+                                        color: Colors.black),
+                                  ),
+                                ),
+                              ),
+                              Center(
+                                child: DropdownButtonExample(lang: []),
+                              ),
+
+
+                            ])
+                      ]));
+            }));
   }
 
 
@@ -207,7 +203,36 @@ class _MyHomePageState extends State<MyHomePage> {
     print(json);
     return 1;
   }
+
+
+}
+class DropdownButtonExample extends StatefulWidget {
+  final List<String> lang;
+
+  DropdownButtonExample({required this.lang});
+
+  @override
+  _DropdownButtonExampleState createState() => _DropdownButtonExampleState();
 }
 
+class _DropdownButtonExampleState extends State<DropdownButtonExample> {
+  String? selectedLang = '';
 
-
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButton<String>(
+      value: selectedLang,
+      items: widget.lang.map((String lang) {
+        return DropdownMenuItem<String>(
+          value: lang,
+          child: Text(lang),
+        );
+      }).toList(),
+      onChanged: (String? newValue) {
+        setState(() {
+          selectedLang = newValue;
+        });
+      },
+    );
+  }
+}
