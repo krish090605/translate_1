@@ -18,8 +18,10 @@ class _MyHomePageState extends State<MyHomePage> {
   String selectedLang = 'none';
   String y = '';
   String getDropdownItems = '';
-  String detectedLanguage = '';
+  String detectedLanguage='';
   String translatedOutput = '';
+
+  String text = '';
   TextEditingController _textController = TextEditingController();
 
   fetchLanguage() async {
@@ -39,17 +41,80 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     print(lang);
     setState(() {});
+
+  }
+  detectLanguage( text) async {
+
+    const url = 'https://google-translate1.p.rapidapi.com/language/translate/v2';
+
+
+    Map<String, String> headers = {
+      'X-RapidAPI-Key': 'a609bd23b8msh018ea2ecb50228bp1539bfjsna5841691f406',
+      'X-RapidAPI-Host': 'google-translate1.p.rapidapi.com',
+
+    };
+    String uri = "https://google-language-translator-detection.p.rapidapi.com/translate/v2/languages";
+    Map<String, String> body = {
+      "q": text,
+
+    };
+
+    // Make the detection request
+    http.Response response = await http.post(
+      Uri.parse(uri),
+      headers: headers,
+      body: body,
+    );
+    Map<String, dynamic> data = jsonDecode(response.body);
+
+
+    print(data['data']['detections'][0][0]['language']);
+    return 'a';
+    setState(() {});
+    
+  }
+  translateText(text , selectedLang, translatedOutput) async {
+  const url = 'https://google-translate1.p.rapidapi.com/language/translate/v2/detect';
+
+  Map<String, String> headers = {
+    'X-RapidAPI-Key': 'a609bd23b8msh018ea2ecb50228bp1539bfjsna5841691f406',
+    'X-RapidAPI-Host': 'google-translate1.p.rapidapi.com',
+
+  };
+
+    String uri = "https://google-translate1.p.rapidapi.com/language/translate/v2";
+    Map<String, String> body = {
+      "q": text,
+      "source": selectedLang,
+      "target": translatedOutput,
+      "format": "text"
+    };
+
+
+    http.Response response = await http.post(
+      Uri.parse(uri),
+
+    );
+    Map<String, dynamic> data = jsonDecode(response.body);
+    String x = data['data']['translation'][0]['translatedText'];
+
+    print('$x');
+  return x;
+  setState(() {});
+
   }
   @override
   void initState() {
     fetchLanguage();
+
+
     super.initState();
   }
 
 
   @override
   Widget build(BuildContext context) {
-    String inival = lang[0];
+
     return Scaffold(
         backgroundColor: Colors.black,
         body: Padding(
@@ -110,25 +175,32 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                       ),
 
+
                     ),
+
+
                   ),
                   const SizedBox(height: 40.0),
                   SizedBox(
                     height: 200.0,
                     width: 200.0,
                     child: Container(
-                      color: Colors.grey[300],
-                      child:  Text('$translatedOutput',
+
+
+                      child:  Text(translatedOutput,
                         style:const TextStyle(
                           fontSize: 20.0,
                           fontWeight: FontWeight.bold,
 
                         ),
 
-                      )
-                      ,
+                      ),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(10.0),
 
-                    ),
+                    ),),
                   ),
 
 
@@ -139,7 +211,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         Expanded(child: Container(
                           alignment: Alignment.centerLeft,
                           height: 70.0,
-                          child: Text('$detectedLanguage'),
+                          child: Text(detectedLanguage),
 
                           decoration: BoxDecoration(
                             shape: BoxShape.rectangle,
@@ -147,6 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             borderRadius: BorderRadius.circular(10.0),
 
                           ),),),
+
 
 
                         Padding(
@@ -161,13 +234,26 @@ class _MyHomePageState extends State<MyHomePage> {
                               shape: BeveledRectangleBorder(
                               borderRadius: BorderRadius.circular(5.0),
                               ),
-                              onPressed: () async{
-                                    String text = _textController.text;
-                                    String detectedLanguage = await detectLanguage(text);
-                                    print('Detected Language: $detectedLanguage');
-                                    String translatedOutput = await translateText(text, selectedLang, detectedLanguage);
-                                    print('Required output : $translatedOutput');
-                                    },
+                              onPressed: (() async{
+                                setState(() async{
+
+
+
+
+                                this.text = _textController.text;
+                                detectLanguage(text);
+                                 this.detectedLanguage = await detectLanguage(
+                                      text);
+
+                                translateText(text, selectedLang, detectedLanguage);
+
+                                  this.translatedOutput = await translateText(
+                                     text, selectedLang, detectedLanguage);
+                                });
+
+
+                              }),
+
 
 
                               child:const Icon(
@@ -201,32 +287,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 }
-Future<String> detectLanguage(String text) async {
-  // Your RapidAPI key and host
-  const url = 'https://google-translate1.p.rapidapi.com/language/translate/v2';
 
-  // Set up the detection request
-  Map<String, String> headers = {
-    'X-RapidAPI-Key': 'a609bd23b8msh018ea2ecb50228bp1539bfjsna5841691f406',
-    'X-RapidAPI-Host': 'google-translate1.p.rapidapi.com'
-
-  };
-  String uri = "https://google-language-translator-detection.p.rapidapi.com/translate/v2/languages";
-  Map<String, String> body = {
-    "q": text,
-  };
-
-  // Make the detection request
-  http.Response response = await http.post(
-    Uri.parse(uri),
-    headers: headers,
-    body: body,
-  );
-  Map<String, dynamic> data = jsonDecode(response.body);
-
-  // Return the detected language code
-  return data['data']['detections'][0]['language'];
-}
 class DropdownButtonExample extends StatefulWidget {
   final List<String> lang;
 
@@ -257,31 +318,6 @@ class _DropdownButtonExampleState extends State<DropdownButtonExample> {
     );
   }
 }
-Future<String> translateText(String text, String targetLanguage, String sourceLanguage) async {
-
-  const url = 'https://google-translate1.p.rapidapi.com/language/translate/v2';
-  // Your RapidAPI key and host
-    Map<String, String> headers = {
-    'X-RapidAPI-Key': 'a609bd23b8msh018ea2ecb50228bp1539bfjsna5841691f406',
-    'X-RapidAPI-Host': 'google-translate1.p.rapidapi.com'
-
-  };
-  String uri = "https://google-translate1.p.rapidapi.com/language/translate/v2";
-  Map<String, String> body = {
-    "q": text,
-    "source": sourceLanguage,
-    "target": targetLanguage,
-    "format": "text"
-  };
 
 
-  http.Response response = await http.post(
-    Uri.parse(uri),
-    headers: headers,
-    body: body,
-  );
-  Map<String, dynamic> data = jsonDecode(response.body);
 
-  // Return the translated text
-  return data['data']['translations'][0]['translatedText'];
-}
